@@ -1,0 +1,59 @@
+# training config
+model_name: google/mt5-small
+fast_tokenizer: True
+optimizer: adamw
+learning_rate: 0.0003
+optimizer_kwargs:
+  weight_decay: 0.01
+scheduler: restarts
+scheduler_kwargs:
+  T_0: 100
+  T_mult: 2
+  eta_min: 0.00001
+scheduler_interval: step
+
+# training loop config
+val_check_interval: 0.1
+num_epochs: 1
+accumulate_grad_batches: 8
+precision: bf16-mixed
+tf32_matmul: true
+random_seed: 42
+
+# dataset config
+# rule:
+# if you want multiple datasets, set the list like:
+# datasets:
+# - /path/of/dataset
+# - /path/to/parquet/file.parquet
+train_datasets:
+ - /path/of/dataset
+ - /path/to/parquet/file.parquet
+test_datasets: null
+batch_size: 6
+val_split: 0.001     # int for number of samples, float for ratio
+use_augment: true
+# if you want to use specific language pair, set the language pair like:
+# specific_lang_pair: [en, zh]
+specific_lang_pair: null
+
+# device config
+accelerator: auto
+strategy: auto
+
+# for development
+csv_logger: true
+tensorboard_logger: false    # pip install tensorboard first
+fast_dev_run: false
+enable_robot: false
+robot_kwargs:
+  # set url to your robot webhook url
+  url: https://use_your_webhook_robot.com/apis/bot/hook/abcdefg-hijklmn-opqrstuvw-xyz
+  interval: 0.1
+
+# checkpoint
+output_dir: checkpoints
+# pack checkpoint files into tar.gz
+pack_ckpt: true
+# set path to checkpoint file if you want to resume from checkpoint, otherwise set null
+ckpt_path: null

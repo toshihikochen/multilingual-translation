@@ -1,0 +1,11 @@
+numpy
+pandas
+torch >= 2.0
+transformers
+lightning >= 2.0
+torchmetrics
+sentencepiece
+pyarrow
+protobuf==3.19.0
+tensorboard==2.11.0
+PyYAML
