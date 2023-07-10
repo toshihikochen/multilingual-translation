@@ -53,7 +53,5 @@ robot_kwargs:
 
 # checkpoint
 output_dir: checkpoints
-# pack checkpoint files into tar.gz
-pack_ckpt: true
 # set path to checkpoint file if you want to resume from checkpoint, otherwise set null
 ckpt_path: null

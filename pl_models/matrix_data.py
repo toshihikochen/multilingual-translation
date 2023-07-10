@@ -21,6 +21,25 @@ class MatrixDataModule(pl.LightningDataModule):
         self.lang_pairs = []    # [(src, tgt), ...]
         if self.specific_lang_pair:
             self.lang_pairs = [specific_lang_pair]
+        else:
+            parquet_datasets = [
+                ParquetMatrix(
+                    data_path, tokenizer=self.tokenizer, use_augment=self.use_augment,
+                    specific_lang_pair=self.specific_lang_pair
+                )
+                for data_path in self.train_data_paths
+            ]
+            lang_set = set()
+            for dataset in parquet_datasets:
+                lang_set.update(dataset.get_langs())
+            lang_set = list(lang_set)
+
+            lang_pairs = []
+            for i in range(len(lang_set) - 1):
+                for j in range(i + 1, len(lang_set)):
+                    lang_pairs.append((lang_set[i], lang_set[j]))
+                    lang_pairs.append((lang_set[j], lang_set[i]))
+            self.lang_pairs = lang_pairs
 
     def setup(self, stage=None):
         if stage == 'fit' or stage is None:
@@ -31,19 +50,6 @@ class MatrixDataModule(pl.LightningDataModule):
                 )
                 for data_path in self.train_data_paths
             ]
-            # get langs
-            if not self.specific_lang_pair:
-                lang_list = []
-                for dataset in parquet_datasets:
-                    lang_list.extend(dataset.get_langs())
-                lang_set = list(set(lang_list))
-
-                # get all possible lang pairs
-                for i in range(len(lang_set)-1):
-                    for j in range(i+1, len(lang_set)):
-                        self.lang_pairs.append((lang_set[i], lang_set[j]))
-                        self.lang_pairs.append((lang_set[j], lang_set[i]))
-
             dataset = ConcatDataset(parquet_datasets)
             if not self.val_split:
                 # full train
@@ -65,20 +71,6 @@ class MatrixDataModule(pl.LightningDataModule):
                     )
                     for data_path in self.test_data_paths
                 ]
-
-                # get langs
-                if not self.specific_lang_pair:
-                    lang_list = []
-                    for dataset in parquet_datasets:
-                        lang_list.extend(dataset.get_langs())
-                    lang_set = list(set(lang_list))
-
-                    # get all possible lang pairs
-                    for i in range(len(lang_set) - 1):
-                        for j in range(i + 1, len(lang_set)):
-                            self.lang_pairs.append((lang_set[i], lang_set[j]))
-                            self.lang_pairs.append((lang_set[j], lang_set[i]))
-
                 self.test_dataset = ConcatDataset(parquet_datasets)
 
     def train_dataloader(self):

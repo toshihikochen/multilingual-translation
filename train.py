@@ -33,9 +33,9 @@ def main(args):
     )
 
     # add translation tokens and resize model
-    tokenizer.add_tokens([f'<{lang1}2{lang2}>' for lang1, lang2 in data_module.lang_pairs])
+    tokenizer.add_tokens([f'<{lang1}2{lang2}>' for lang1, lang2 in data_module.get_lang_pairs()])
     model.resize_token_embeddings(len(tokenizer))
-    
+
     # create the lightning model
     translation_model = TranslationModel(
         tokenizer, model,
@@ -81,20 +81,9 @@ def main(args):
         trainer.test(translation_model, data_module)
 
     # save the model
-    # if not args['fast_dev_run']:    # don't save the model if fast_dev_run is enabled
-    #     tokenizer.save_pretrained(os.path.join(args['output_dir'], 'tokenizer'))
-    #     model.save_pretrained(os.path.join(args['output_dir'], 'model'))
-    #     if args['pack_ckpt']:
-    #         import tarfile
-    #         with tarfile.open('checkpoints.tar.gz', 'w:gz') as tar:
-    #             tar.add('checkpoints', arcname='checkpoints')
-
-    tokenizer.save_pretrained(os.path.join(args['output_dir'], 'tokenizer'))
-    model.save_pretrained(os.path.join(args['output_dir'], 'model'))
-    if args['pack_ckpt']:
-        import tarfile
-        with tarfile.open('checkpoints.tar.gz', 'w:gz') as tar:
-            tar.add('checkpoints', arcname='checkpoints')
+    if not args['fast_dev_run']:    # don't save the model if fast_dev_run is enabled
+        tokenizer.save_pretrained(os.path.join(args['output_dir'], 'tokenizer'))
+        model.save_pretrained(os.path.join(args['output_dir'], 'model'))
 
 
 if __name__ == '__main__':
