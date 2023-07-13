@@ -1,23 +1,24 @@
 # training config
+version: null    # set version if you want to save the model with version, null for auto versioning
 model_name: google/mt5-small
-fast_tokenizer: True
-optimizer: adamw
+fast_tokenizer: True    # use fast tokenizer
+optimizer: adamw    # provided adam, adamw from pytorch and adafactor from transformers
 learning_rate: 0.0003
-optimizer_kwargs:
+optimizer_kwargs:   # set null if you don't want to use optimizer kwargs, see details in pytorch or transformers document
   weight_decay: 0.01
-scheduler: restarts
-scheduler_kwargs:
+scheduler: restarts    # provided linear, cosine, restarts from pytorch, set null if you don't want to use scheduler
+scheduler_kwargs:    # set null if you don't want to use scheduler kwargs, see details in pytorch document
   T_0: 100
   T_mult: 2
   eta_min: 0.00001
-scheduler_interval: step
+scheduler_interval: step    # set as epoch or step when scheduler.step() will be called every epoch or every batch
 
 # training loop config
-val_check_interval: 0.1
+val_check_interval: 0.1    # int for number of steps, float for ratio
 num_epochs: 1
-accumulate_grad_batches: 8
-precision: bf16-mixed
-tf32_matmul: true
+accumulate_grad_batches: 8   # set 1 if you don't want to use gradient accumulation
+precision: bf16-mixed    # provided 16, 32, bf16, bf16-mixed from lightning
+tf32_matmul: true    # set true if you want to use tf32 matmul
 random_seed: 42
 
 # dataset config
@@ -29,6 +30,7 @@ random_seed: 42
 train_datasets:
  - /path/of/dataset
  - /path/to/parquet/file.parquet
+val_datasets: null
 test_datasets: null
 batch_size: 6
 val_split: 0.001     # int for number of samples, float for ratio
@@ -53,5 +55,4 @@ robot_kwargs:
 
 # checkpoint
 output_dir: checkpoints
-# set path to checkpoint file if you want to resume from checkpoint, otherwise set null
-ckpt_path: null
+ckpt_path: null    # set path to checkpoint file if you want to resume from checkpoint, otherwise set null

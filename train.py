@@ -47,9 +47,9 @@ def main(args):
     # loggers
     loggers = []
     if args['csv_logger']:
-        loggers.append(CSVLogger(save_dir='.', flush_logs_every_n_steps=1000, version='csv'))
+        loggers.append(CSVLogger(save_dir='.', flush_logs_every_n_steps=1000, version=args['version']))
     if args['tensorboard_logger']:
-        loggers.append(TensorBoardLogger(save_dir='.', version='tensorboard'))
+        loggers.append(TensorBoardLogger(save_dir='.', version=args['version']))
     if len(loggers) == 0:
         loggers = None
 
