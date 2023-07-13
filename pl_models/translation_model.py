@@ -80,6 +80,8 @@ class TranslationModel(pl.LightningModule):
         optimizer = optimizers[self.optimizer](self.parameters(), lr=self.lr, **self.optim_kwargs)
 
         if self.scheduler is not None:
+            if self.scheduler_kwargs is None:
+                self.scheduler_kwargs = {}
             scheduler = schedulers[self.scheduler](optimizer, **self.scheduler_kwargs)
             return {
                 'optimizer': optimizer,
